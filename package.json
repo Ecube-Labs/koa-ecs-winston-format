@@ -1,0 +1,32 @@
+{
+  "name": "koa-ecs-winston-format",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "version": "npm run build && git add package.json",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ecube-Labs/koa-ecs-winston-format.git"
+  },
+  "author": "id.kim@ecubelabs.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Ecube-Labs/koa-ecs-winston-format/issues"
+  },
+  "homepage": "https://github.com/Ecube-Labs/koa-ecs-winston-format#readme",
+  "dependencies": {
+    "jest": "^29.3.1",
+    "koa": "^2.14.1",
+    "koa-joi-router": "^8.0.0",
+    "winston": "^3.8.2"
+  },
+  "devDependencies": {
+    "@types/koa": "^2.13.5",
+    "@types/koa-joi-router": "^8.0.4",
+    "@types/node": "^18.11.18"
+  }
+}
