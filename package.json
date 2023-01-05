@@ -12,19 +12,20 @@
     "type": "git",
     "url": "git+https://github.com/Ecube-Labs/koa-ecs-winston-format.git"
   },
-  "author": "id.kim@ecubelabs.com",
+  "author": "bm.yoon@ecubelabs.com",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Ecube-Labs/koa-ecs-winston-format/issues"
   },
   "homepage": "https://github.com/Ecube-Labs/koa-ecs-winston-format#readme",
-  "dependencies": {
+  "peerDependencies": {
     "jest": "^29.3.1",
     "koa": "^2.14.1",
     "koa-joi-router": "^8.0.0",
     "winston": "^3.8.2"
   },
   "devDependencies": {
+    "@ecubelabs/tsconfig": "^1.0.0",
     "@types/koa": "^2.13.5",
     "@types/koa-joi-router": "^8.0.4",
     "@types/node": "^18.11.18"
