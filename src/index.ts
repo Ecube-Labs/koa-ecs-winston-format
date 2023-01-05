@@ -116,28 +116,4 @@ const ecsTransformer = (
   return info;
 };
 
-const koaEcsFormat = winston.format(ecsTransformer);
-
-export function koaLogger(loggingName: string) {
-  return winston.createLogger({
-    format: koaEcsFormat({
-      name: loggingName,
-    }),
-    transports: [new winston.transports.Console()],
-  });
-}
-
-export function getLoggingContext(context: Context) {
-  const user = context.state?.user;
-  return {
-    ctx: context,
-    user: user
-      ? {
-          id: user.id.toString(),
-          name: user.username,
-          email: user.email,
-        }
-      : undefined,
-    txId: context.state?.txId,
-  };
-}
+export const koaEcsFormat = winston.format(ecsTransformer);
