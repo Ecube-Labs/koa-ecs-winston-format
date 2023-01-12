@@ -6,7 +6,9 @@
   "scripts": {
     "test": "jest",
     "version": "npm run build && git add package.json",
-    "build": "tsc"
+    "build": "tsc",
+    "prepublishOnly": "rm -rf ./src && cp -r ./dist/* . && rm -rf ./dist",
+    "postpublish": "git clean -fd && git reset --hard"
   },
   "repository": {
     "type": "git",

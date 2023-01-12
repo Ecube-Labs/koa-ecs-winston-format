@@ -5,6 +5,7 @@
     "module": "commonjs",
     "baseUrl": "./src",
     "outDir": "./dist",
-    "useUnknownInCatchVariables": false
+    "useUnknownInCatchVariables": false,
+    "declaration": true /* Generates corresponding '.d.ts' file. */
   }
 }
