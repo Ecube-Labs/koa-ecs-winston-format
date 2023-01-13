@@ -1,5 +1,6 @@
 {
   "include": ["src"],
+  "exclude": ["node_modules", "./src/escTransformer.spec.ts"],
   "extends": "@ecubelabs/tsconfig/node16.json", // NOTE: https://github.com/Ecube-Labs/tsconfig/blob/main/node16.json
   "compilerOptions": {
     "module": "commonjs",
