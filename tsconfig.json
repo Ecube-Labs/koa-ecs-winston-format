@@ -1,0 +1,11 @@
+{
+  "include": ["src"],
+  "extends": "@ecubelabs/tsconfig/node16.json", // NOTE: https://github.com/Ecube-Labs/tsconfig/blob/main/node16.json
+  "compilerOptions": {
+    "module": "commonjs",
+    "baseUrl": "./src",
+    "outDir": "./dist",
+    "useUnknownInCatchVariables": false,
+    "declaration": true /* Generates corresponding '.d.ts' file. */
+  }
+}
