@@ -73,7 +73,7 @@ export const ecsTransformer = (
     ecs: {
       version: "8.10.0", // 로깅 필드를 변경할 경우 ecs version 에 맞춰야 한다.
     },
-    tags: tags && !tags.length ? tags : ["request"],
+    tags: tags && tags.length !== 0 ? tags : ["request"],
     service: {
       name: options?.name,
     },
