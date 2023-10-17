@@ -70,7 +70,7 @@ export const ecsTransformer = (
     "log.level": level,
     message,
     ecs: {
-      version: "8.5.0", // 로깅 필드를 변경할 경우 ecs version 에 맞춰야 한다.
+      version: "8.10.0", // 로깅 필드를 변경할 경우 ecs version 에 맞춰야 한다.
     },
     tags: ["request"],
     service: {
