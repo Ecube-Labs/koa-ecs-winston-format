@@ -10,10 +10,11 @@ export const ecsTransformer = (
     user?: any;
     txId?: string;
     err?: Error;
+    tags?: string[];
   },
   options?: Record<string, any>
 ) => {
-  const { level, message, ctx, user, txId, err } = info;
+  const { level, message, ctx, user, txId, err, tags } = info;
 
   const parseUrl = () => {
     const requestUrl = ctx?.req.url;
@@ -72,7 +73,7 @@ export const ecsTransformer = (
     ecs: {
       version: "8.10.0", // 로깅 필드를 변경할 경우 ecs version 에 맞춰야 한다.
     },
-    tags: ["request"],
+    tags: tags && !tags.length ? tags : ["request"],
     service: {
       name: options?.name,
     },
