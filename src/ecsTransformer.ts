@@ -10,19 +10,20 @@ export const ecsTransformer = (
     user?: any;
     txId?: string;
     err?: Error;
+    tags?: string[];
   },
   options?: Record<string, any>
 ) => {
-  const { level, message, ctx, user, txId, err } = info;
+  const { level, message, ctx, user, txId, err, tags } = info;
 
   const parseUrl = () => {
-    const requestUrl = ctx?.req.url;
+    const requestUrl = ctx?.req?.url;
     const url: {
       full?: string;
       path?: string;
       query?: string;
       fragment?: string;
-    } = { full: ctx?.URL.href };
+    } = { full: ctx?.URL?.href };
     const hasQuery = requestUrl?.indexOf("?") ?? -1;
     const hasAnchor = requestUrl?.indexOf("#") ?? -1;
 
@@ -70,9 +71,10 @@ export const ecsTransformer = (
     "log.level": level,
     message,
     ecs: {
-      version: "8.5.0", // 로깅 필드를 변경할 경우 ecs version 에 맞춰야 한다.
+      // NOTE: @see https://www.elastic.co/guide/en/ecs/current/ecs-field-reference.html
+      version: "8.10.0", // 로깅 필드를 변경할 경우 ecs version 에 맞춰야 한다.
     },
-    tags: ["request"],
+    tags: tags ?? ["request"],
     service: {
       name: options?.name,
     },
@@ -81,7 +83,7 @@ export const ecsTransformer = (
     },
     user,
     http: {
-      version: ctx?.req.httpVersion,
+      version: ctx?.req?.httpVersion,
       request: {
         id: txId,
         method: req?.method,
