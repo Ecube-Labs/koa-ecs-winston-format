@@ -17,13 +17,13 @@ export const ecsTransformer = (
   const { level, message, ctx, user, txId, err, tags } = info;
 
   const parseUrl = () => {
-    const requestUrl = ctx?.req.url;
+    const requestUrl = ctx?.req?.url;
     const url: {
       full?: string;
       path?: string;
       query?: string;
       fragment?: string;
-    } = { full: ctx?.URL.href };
+    } = { full: ctx?.URL?.href };
     const hasQuery = requestUrl?.indexOf("?") ?? -1;
     const hasAnchor = requestUrl?.indexOf("#") ?? -1;
 
@@ -83,7 +83,7 @@ export const ecsTransformer = (
     },
     user,
     http: {
-      version: ctx?.req.httpVersion,
+      version: ctx?.req?.httpVersion,
       request: {
         id: txId,
         method: req?.method,
