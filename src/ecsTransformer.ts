@@ -68,7 +68,7 @@ export const ecsTransformer = (
 
   const ecsFields = {
     "@timestamp": new Date(),
-    "log.level": level,
+    log: { level },
     message,
     ecs: {
       // NOTE: @see https://www.elastic.co/guide/en/ecs/current/ecs-field-reference.html
