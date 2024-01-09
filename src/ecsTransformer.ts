@@ -46,17 +46,17 @@ export const ecsTransformer = (
 
   const parseClient = () => {
     const req = ctx?.request;
-    const ip = ctx?.request.header["x-real-ip"] as string | undefined;
-    const client: { ip?: string; address?: string; port?: number } = {};
+    const xForwardedFor = req?.header["x-forwarded-for"] as string | undefined;
+    const xRealIp = req?.header["x-real-ip"] as string | undefined;
 
-    if (ip) {
-      client.ip = client.address = ip;
-    }
-    if (req?.socket) {
-      client.port = req.socket.remotePort;
-    }
+    // NOTE: https://developer.mozilla.org/ko/docs/Web/HTTP/Headers/X-Forwarded-For 헤더는 수정이 가능하지만 명세상으로는 가장 왼쪽이 최초 client IP를 바라본다.
+    const ip = xForwardedFor?.split(", ")[0] || xRealIp;
 
-    return client;
+    return {
+      ip,
+      address: ip,
+      port: req?.socket.remotePort,
+    };
   };
 
   const req = ctx?.request;
