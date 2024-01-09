@@ -46,14 +46,9 @@ export const ecsTransformer = (
 
   const parseClient = () => {
     const req = ctx?.request;
-    const clientIP = ctx?.request.header["x-real-ip"] as string | undefined;
-    let ip;
+    const ip = ctx?.request.header["x-real-ip"] as string | undefined;
     const client: { ip?: string; address?: string; port?: number } = {};
-    if (clientIP) {
-      ip = clientIP;
-    } else if (req?.socket.remoteAddress) {
-      ip = req.socket.remoteAddress;
-    }
+
     if (ip) {
       client.ip = client.address = ip;
     }
