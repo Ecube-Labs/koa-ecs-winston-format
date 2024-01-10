@@ -184,7 +184,7 @@ describe("ecsTransformer Test", () => {
         ctx: {
           request: {
             ip: "::ffff:172.18.0.1",
-            socket: { remotePort: 59826 },
+            socket: { remotePort: 59826, remoteAddress: "255.255.255.255" },
             method: "GET",
             header: {
               host: "localhost:8088",
@@ -250,7 +250,7 @@ describe("ecsTransformer Test", () => {
         ctx: {
           request: {
             ip: "::ffff:172.18.0.1",
-            socket: { remotePort: 59826 },
+            socket: { remotePort: 59826, remoteAddress: "255.255.255.255" },
             method: "GET",
             header: {
               host: "localhost:8088",
