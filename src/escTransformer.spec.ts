@@ -176,7 +176,7 @@ describe("ecsTransformer Test", () => {
   });
 
   describe("client 필드에 대한 테스트", () => {
-    test("1순위로는 x-forwarded-for 중 가장 왼쪽 IP를 최초 client IP로 바라본다.", () => {
+    test("1순위로는 x-forwarded-for 중 가장 왼쪽 IP를 최초 client IP로 간주한다.", () => {
       const requestLog = ecsTransformer({
         level: "info",
         message:
@@ -184,7 +184,7 @@ describe("ecsTransformer Test", () => {
         ctx: {
           request: {
             ip: "::ffff:172.18.0.1",
-            socket: { remotePort: 59826 },
+            socket: { remotePort: 59826, remoteAddress: "255.255.255.255" },
             method: "GET",
             header: {
               host: "localhost:8088",
@@ -250,7 +250,7 @@ describe("ecsTransformer Test", () => {
         ctx: {
           request: {
             ip: "::ffff:172.18.0.1",
-            socket: { remotePort: 59826 },
+            socket: { remotePort: 59826, remoteAddress: "255.255.255.255" },
             method: "GET",
             header: {
               host: "localhost:8088",
@@ -304,6 +304,70 @@ describe("ecsTransformer Test", () => {
       //@ts-expect-error
       expect(requestLog[Symbol.for("message")]).toEqual(
         '{"@timestamp":"2022-01-10T00:00:00.000Z","log":{"level":"info"},"message":"[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\\r\\n<- 200 - 104ms","ecs":{"version":"8.10.0"},"tags":["request"],"service":{},"host":{},"user":{"id":"1","name":"windy","email":"bm.yoon@ecubelabs.com"},"http":{"version":"1.1","request":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d","method":"GET","headers":"{\\"host\\":\\"localhost:8088\\",\\"connection\\":\\"keep-alive\\",\\"sec-ch-ua\\":\\"\\\\\\"Not?A_Brand\\\\\\";v=\\\\\\"8\\\\\\", \\\\\\"Chromium\\\\\\";v=\\\\\\"108\\\\\\", \\\\\\"Google Chrome\\\\\\";v=\\\\\\"108\\\\\\"\\",\\"accept\\":\\"application/json, text/plain, */*\\",\\"sec-ch-ua-mobile\\":\\"?0\\",\\"authorization\\":\\"Bearer testcodetoken\\",\\"user-agent\\":\\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36\\",\\"sec-ch-ua-platform\\":\\"\\\\\\"macOS\\\\\\"\\",\\"origin\\":\\"http://localhost:9000\\",\\"sec-fetch-site\\":\\"same-site\\",\\"sec-fetch-mode\\":\\"cors\\",\\"sec-fetch-dest\\":\\"empty\\",\\"referer\\":\\"http://localhost:9000/\\",\\"accept-encoding\\":\\"gzip, deflate, br\\",\\"accept-language\\":\\"ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7\\",\\"x-real-ip\\":\\"100.200.255.255\\"}","body":{"content":"{\\"count\\":1,\\"data\\":[{\\"id\\":1,\\"name\\":\\"TEST00001\\",\\"note\\":\\"test\\",\\"price\\":1000000,\\"createDate\\":\\"2023-01-01T15:00:00.000Z\\"}]}"}},"response":{"status_code":200}},"trace":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d"},"url":{"full":"http://localhost:8088/api/test","path":"/api/test"},"user_agent":{"original":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"},"client":{"ip":"100.200.255.255","address":"100.200.255.255","port":59826}}'
+      );
+    });
+
+    test("x-real-ip가 없으면 3순위로 remoteAddress를 client IP로 간주한다", () => {
+      const requestLog = ecsTransformer({
+        level: "info",
+        message:
+          "[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\r\n<- 200 - 104ms",
+        ctx: {
+          request: {
+            ip: "::ffff:172.18.0.1",
+            socket: { remotePort: 59826, remoteAddress: "255.255.255.255" },
+            method: "GET",
+            header: {
+              host: "localhost:8088",
+              connection: "keep-alive",
+              "sec-ch-ua":
+                '"Not?A_Brand";v="8", "Chromium";v="108", "Google Chrome";v="108"',
+              accept: "application/json, text/plain, */*",
+              "sec-ch-ua-mobile": "?0",
+              authorization: "Bearer testcodetoken",
+              "user-agent":
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
+              "sec-ch-ua-platform": '"macOS"',
+              origin: "http://localhost:9000",
+              "sec-fetch-site": "same-site",
+              "sec-fetch-mode": "cors",
+              "sec-fetch-dest": "empty",
+              referer: "http://localhost:9000/",
+              "accept-encoding": "gzip, deflate, br",
+              "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+            },
+            body: {
+              count: 1,
+              data: [
+                {
+                  id: 1,
+                  name: "TEST00001",
+                  note: "test",
+                  price: 1000000,
+                  createDate: "2023-01-01T15:00:00.000Z",
+                },
+              ],
+            },
+          },
+          req: { url: "/api/test", httpVersion: "1.1" },
+          URL: { href: "http://localhost:8088/api/test" },
+          response: {
+            status: 200,
+            headers: {
+              "x-powered-by": "Express",
+              vary: "Origin",
+              "access-control-allow-origin": "http://localhost:9000",
+              "content-type": "application/json; charset=utf-8",
+            },
+          },
+        } as unknown as Context,
+        user: { id: "1", name: "windy", email: "bm.yoon@ecubelabs.com" },
+        txId: "b9612167-8cb4-43f2-a90e-e02cd259e81d",
+      });
+
+      //@ts-expect-error
+      expect(requestLog[Symbol.for("message")]).toEqual(
+        '{"@timestamp":"2022-01-10T00:00:00.000Z","log":{"level":"info"},"message":"[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\\r\\n<- 200 - 104ms","ecs":{"version":"8.10.0"},"tags":["request"],"service":{},"host":{},"user":{"id":"1","name":"windy","email":"bm.yoon@ecubelabs.com"},"http":{"version":"1.1","request":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d","method":"GET","headers":"{\\"host\\":\\"localhost:8088\\",\\"connection\\":\\"keep-alive\\",\\"sec-ch-ua\\":\\"\\\\\\"Not?A_Brand\\\\\\";v=\\\\\\"8\\\\\\", \\\\\\"Chromium\\\\\\";v=\\\\\\"108\\\\\\", \\\\\\"Google Chrome\\\\\\";v=\\\\\\"108\\\\\\"\\",\\"accept\\":\\"application/json, text/plain, */*\\",\\"sec-ch-ua-mobile\\":\\"?0\\",\\"authorization\\":\\"Bearer testcodetoken\\",\\"user-agent\\":\\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36\\",\\"sec-ch-ua-platform\\":\\"\\\\\\"macOS\\\\\\"\\",\\"origin\\":\\"http://localhost:9000\\",\\"sec-fetch-site\\":\\"same-site\\",\\"sec-fetch-mode\\":\\"cors\\",\\"sec-fetch-dest\\":\\"empty\\",\\"referer\\":\\"http://localhost:9000/\\",\\"accept-encoding\\":\\"gzip, deflate, br\\",\\"accept-language\\":\\"ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7\\"}","body":{"content":"{\\"count\\":1,\\"data\\":[{\\"id\\":1,\\"name\\":\\"TEST00001\\",\\"note\\":\\"test\\",\\"price\\":1000000,\\"createDate\\":\\"2023-01-01T15:00:00.000Z\\"}]}"}},"response":{"status_code":200}},"trace":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d"},"url":{"full":"http://localhost:8088/api/test","path":"/api/test"},"user_agent":{"original":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"},"client":{"ip":"255.255.255.255","address":"255.255.255.255","port":59826}}'
       );
     });
   });

@@ -50,7 +50,10 @@ export const ecsTransformer = (
     const xRealIp = req?.header["x-real-ip"] as string | undefined;
 
     // NOTE: https://developer.mozilla.org/ko/docs/Web/HTTP/Headers/X-Forwarded-For 헤더는 수정이 가능하지만 명세상으로는 가장 왼쪽이 최초 client IP를 바라본다.
-    const ip = xForwardedFor?.split(",")[0]?.trim() || xRealIp;
+    const ip =
+      xForwardedFor?.split(",")[0]?.trim() ||
+      xRealIp ||
+      req?.socket.remoteAddress;
 
     return {
       ip,
