@@ -2,6 +2,18 @@ import type { Context } from "koa";
 
 const Message = Symbol.for("message");
 
+/**
+ * @see https://www.elastic.co/guide/en/ecs/8.10/ecs-device.html
+ */
+type DeviceField = {
+  id: string;
+  manufacturer: string;
+  model: {
+    identifier: string;
+    name: string;
+  };
+}
+
 export const ecsTransformer = (
   info: {
     level: string;
@@ -11,10 +23,11 @@ export const ecsTransformer = (
     txId?: string;
     err?: Error;
     tags?: string[];
+    device?: DeviceField;
   },
   options?: Record<string, any>
 ) => {
-  const { level, message, ctx, user, txId, err, tags } = info;
+  const { level, message, ctx, user, txId, err, tags, device } = info;
 
   const parseUrl = () => {
     const requestUrl = ctx?.req?.url;
@@ -109,6 +122,7 @@ export const ecsTransformer = (
           stack_trace: err.stack,
         }
       : undefined,
+    device,
   };
 
   Object.assign(info, { [Message]: JSON.stringify(ecsFields) });
