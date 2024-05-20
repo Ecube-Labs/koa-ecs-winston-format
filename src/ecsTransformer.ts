@@ -6,11 +6,11 @@ const Message = Symbol.for("message");
  * @see https://www.elastic.co/guide/en/ecs/8.10/ecs-device.html
  */
 type DeviceField = {
-  id: string;
-  manufacturer: string;
-  model: {
-    identifier: string;
-    name: string;
+  id?: string;
+  manufacturer?: string;
+  model?: {
+    identifier?: string;
+    name?: string;
   };
 }
 
