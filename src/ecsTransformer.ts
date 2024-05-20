@@ -12,6 +12,7 @@ type DeviceField = {
     identifier?: string;
     name?: string;
   };
+  [key: string]: any; // NOTE: ecs 확장을 위한 임의의 필드
 }
 
 export const ecsTransformer = (
@@ -122,8 +123,8 @@ export const ecsTransformer = (
           stack_trace: err.stack,
         }
       : undefined,
-    device,
-  };
+      device,
+    };
 
   Object.assign(info, { [Message]: JSON.stringify(ecsFields) });
 
