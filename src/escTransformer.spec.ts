@@ -371,4 +371,28 @@ describe("ecsTransformer Test", () => {
       );
     });
   });
+
+  describe("device 필드", () => {
+    test("device 필드가 존재하는 경우", () => {
+      const errorLog = ecsTransformer({
+        level: "error",
+        message: "Task parseAndValidate aborted with Error: Failed to parse payload.",
+        txId: "b9612167-8cb4-43f2-a90e-e02cd259e81d",
+        err: {
+          name: "ProtocolError",
+          message: "Failed to parse payload",
+          stack:
+          "ProtocolError: Failed to parse payload\n    at Object.parseAndValidate (/tracker-server/apps/tracker-server/app/tasks/parseAndValidate.ts:34:15)\n    at applyFunction (/tracker-server/apps/tracker-server/app/flow.js:149:39)\n    at /tracker-server/node_modules/async/dist/async.js:151:38\n    at runTask (/tracker-server/node_modules/async/dist/async.js:1157:17)\n    at /tracker-server/node_modules/async/dist/async.js:1093:35\n    at processQueue (/tracker-server/node_modules/async/dist/async.js:1103:17)\n    at Object.auto (/tracker-server/node_modules/async/dist/async.js:1090:9)\n    at Object.mainFlow (/tracker-server/apps/tracker-server/app/flow.js:33:15)\n    at /tracker-server/apps/tracker-server/app/routes/index.ts:33:14\n    at dispatch (/tracker-server/node_modules/@koa/router/node_modules/koa-compose/index.js:44:32)",
+        },
+        device: {
+          id: '89314404000652545956'
+        }
+      });
+
+      //@ts-expect-error
+      expect(errorLog[Symbol.for("message")]).toEqual(
+        '{\"@timestamp\":\"2022-01-10T00:00:00.000Z\",\"log\":{\"level\":\"error\"},\"message\":\"Task parseAndValidate aborted with Error: Failed to parse payload.\",\"ecs\":{\"version\":\"8.10.0\"},\"tags\":[\"request\"],\"service\":{},\"host\":{},\"http\":{\"request\":{\"id\":\"b9612167-8cb4-43f2-a90e-e02cd259e81d\"},\"response\":{}},\"trace\":{\"id\":\"b9612167-8cb4-43f2-a90e-e02cd259e81d\"},\"url\":{},\"user_agent\":{},\"client\":{},\"error\":{\"message\":\"Failed to parse payload\",\"stack_trace\":\"ProtocolError: Failed to parse payload\\n    at Object.parseAndValidate (/tracker-server/apps/tracker-server/app/tasks/parseAndValidate.ts:34:15)\\n    at applyFunction (/tracker-server/apps/tracker-server/app/flow.js:149:39)\\n    at /tracker-server/node_modules/async/dist/async.js:151:38\\n    at runTask (/tracker-server/node_modules/async/dist/async.js:1157:17)\\n    at /tracker-server/node_modules/async/dist/async.js:1093:35\\n    at processQueue (/tracker-server/node_modules/async/dist/async.js:1103:17)\\n    at Object.auto (/tracker-server/node_modules/async/dist/async.js:1090:9)\\n    at Object.mainFlow (/tracker-server/apps/tracker-server/app/flow.js:33:15)\\n    at /tracker-server/apps/tracker-server/app/routes/index.ts:33:14\\n    at dispatch (/tracker-server/node_modules/@koa/router/node_modules/koa-compose/index.js:44:32)\"},\"device\":{\"id\":\"89314404000652545956\"}}'
+      );
+    });
+  });
 });
