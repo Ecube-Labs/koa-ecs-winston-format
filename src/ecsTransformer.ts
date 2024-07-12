@@ -22,7 +22,7 @@ export const ecsTransformer = (
     ctx?: Context;
     user?: any;
     txId?: string;
-    err?: Error;
+    err?: Error & { [key: string]: any };
     tags?: string[];
     device?: DeviceField;
   },
@@ -118,13 +118,14 @@ export const ecsTransformer = (
     client: parseClient(),
     error: err
       ? {
-          code: ctx?.status,
+          ...err,
+          code: err.code ?? ctx?.status,
           message: err.message,
           stack_trace: err.stack,
         }
       : undefined,
-      device,
-    };
+    device,
+  };
 
   Object.assign(info, { [Message]: JSON.stringify(ecsFields) });
 
