@@ -22,7 +22,7 @@ export const ecsTransformer = (
     ctx?: Context;
     user?: any;
     txId?: string;
-    err?: Error;
+    err?: Error & { code?: string; reason?: string; type?: string; errno?: string };
     tags?: string[];
     device?: DeviceField;
   },
@@ -116,15 +116,22 @@ export const ecsTransformer = (
       original: req?.header["user-agent"],
     },
     client: parseClient(),
+    /**
+     * @see https://www.elastic.co/guide/en/ecs/8.10/ecs-device.html
+     */
     error: err
       ? {
-          code: ctx?.status,
+          id: txId,
+          code: err.code ?? ctx?.status,
           message: err.message,
           stack_trace: err.stack,
+          type: err.type,
+          errno: err.errno,
+          reason: err.reason,
         }
       : undefined,
-      device,
-    };
+    device,
+  };
 
   Object.assign(info, { [Message]: JSON.stringify(ecsFields) });
 
