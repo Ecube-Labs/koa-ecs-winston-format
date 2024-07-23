@@ -118,10 +118,13 @@ export const ecsTransformer = (
     client: parseClient(),
     error: err
       ? {
-          ...err,
           code: err.code ?? ctx?.status,
           message: err.message,
           stack_trace: err.stack,
+          // NOTE: err를 spread하면 Converting circular structure to JSON이 발생할 수 있으므로 직접 필드를 추가한다..
+          reason: err.reason,
+          type: err.name,
+          errno: err.errno,
         }
       : undefined,
     device,
