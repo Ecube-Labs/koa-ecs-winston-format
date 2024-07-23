@@ -1,7 +1,7 @@
-import { Context } from "koa";
-import { ecsTransformer } from "./ecsTransformer";
+import { Context } from 'koa';
+import { ecsTransformer } from './ecsTransformer';
 
-export function tools() {
+function tools() {
   let _Date: typeof Date;
 
   function mockDate(value: number | string | Date) {
@@ -32,366 +32,356 @@ export function tools() {
 
 const { mockDate, resetDate } = tools();
 
-describe("ecsTransformer Test", () => {
+describe('ecsTransformer Test', () => {
   beforeAll(() => {
-    mockDate(new Date("2022-01-10"));
+    mockDate(new Date('2022-01-10'));
   });
 
   afterAll(() => {
     resetDate();
   });
 
-  test("request log format", () => {
+  test('request log format', () => {
     const requestLog = ecsTransformer({
-      level: "info",
-      message:
-        "[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\r\n<- 200 - 104ms",
+      level: 'info',
+      message: '[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\r\n<- 200 - 104ms',
       ctx: {
         request: {
-          ip: "::ffff:172.18.0.1",
+          ip: '::ffff:172.18.0.1',
           socket: { remotePort: 59826 },
-          method: "GET",
+          method: 'GET',
           header: {
-            host: "localhost:8088",
-            connection: "keep-alive",
-            "sec-ch-ua":
-              '"Not?A_Brand";v="8", "Chromium";v="108", "Google Chrome";v="108"',
-            accept: "application/json, text/plain, */*",
-            "sec-ch-ua-mobile": "?0",
-            authorization: "Bearer testcodetoken",
-            "user-agent":
-              "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
-            "sec-ch-ua-platform": '"macOS"',
-            origin: "http://localhost:9000",
-            "sec-fetch-site": "same-site",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-dest": "empty",
-            referer: "http://localhost:9000/",
-            "accept-encoding": "gzip, deflate, br",
-            "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+            host: 'localhost:8088',
+            connection: 'keep-alive',
+            'sec-ch-ua': '"Not?A_Brand";v="8", "Chromium";v="108", "Google Chrome";v="108"',
+            accept: 'application/json, text/plain, */*',
+            'sec-ch-ua-mobile': '?0',
+            authorization: 'Bearer testcodetoken',
+            'user-agent':
+              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+            'sec-ch-ua-platform': '"macOS"',
+            origin: 'http://localhost:9000',
+            'sec-fetch-site': 'same-site',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-dest': 'empty',
+            referer: 'http://localhost:9000/',
+            'accept-encoding': 'gzip, deflate, br',
+            'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
           },
           body: {
             count: 1,
             data: [
               {
                 id: 1,
-                name: "TEST00001",
-                note: "test",
+                name: 'TEST00001',
+                note: 'test',
                 price: 1000000,
-                createDate: "2023-01-01T15:00:00.000Z",
+                createDate: '2023-01-01T15:00:00.000Z',
               },
             ],
           },
         },
-        req: { url: "/api/test", httpVersion: "1.1" },
-        URL: { href: "http://localhost:8088/api/test" },
+        req: { url: '/api/test', httpVersion: '1.1' },
+        URL: { href: 'http://localhost:8088/api/test' },
         response: {
           status: 200,
           headers: {
-            "x-powered-by": "Express",
-            vary: "Origin",
-            "access-control-allow-origin": "http://localhost:9000",
-            "content-type": "application/json; charset=utf-8",
+            'x-powered-by': 'Express',
+            vary: 'Origin',
+            'access-control-allow-origin': 'http://localhost:9000',
+            'content-type': 'application/json; charset=utf-8',
           },
         },
       } as unknown as Context,
-      user: { id: "1", name: "windy", email: "bm.yoon@ecubelabs.com" },
-      txId: "b9612167-8cb4-43f2-a90e-e02cd259e81d",
+      user: { id: '1', name: 'windy', email: 'bm.yoon@ecubelabs.com' },
+      txId: 'b9612167-8cb4-43f2-a90e-e02cd259e81d',
     });
 
-    //@ts-expect-error
-    expect(requestLog[Symbol.for("message")]).toEqual(
-      '{"@timestamp":"2022-01-10T00:00:00.000Z","log":{"level":"info"},"message":"[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\\r\\n<- 200 - 104ms","ecs":{"version":"8.10.0"},"tags":["request"],"service":{},"host":{},"user":{"id":"1","name":"windy","email":"bm.yoon@ecubelabs.com"},"http":{"version":"1.1","request":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d","method":"GET","headers":"{\\"host\\":\\"localhost:8088\\",\\"connection\\":\\"keep-alive\\",\\"sec-ch-ua\\":\\"\\\\\\"Not?A_Brand\\\\\\";v=\\\\\\"8\\\\\\", \\\\\\"Chromium\\\\\\";v=\\\\\\"108\\\\\\", \\\\\\"Google Chrome\\\\\\";v=\\\\\\"108\\\\\\"\\",\\"accept\\":\\"application/json, text/plain, */*\\",\\"sec-ch-ua-mobile\\":\\"?0\\",\\"authorization\\":\\"Bearer testcodetoken\\",\\"user-agent\\":\\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36\\",\\"sec-ch-ua-platform\\":\\"\\\\\\"macOS\\\\\\"\\",\\"origin\\":\\"http://localhost:9000\\",\\"sec-fetch-site\\":\\"same-site\\",\\"sec-fetch-mode\\":\\"cors\\",\\"sec-fetch-dest\\":\\"empty\\",\\"referer\\":\\"http://localhost:9000/\\",\\"accept-encoding\\":\\"gzip, deflate, br\\",\\"accept-language\\":\\"ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7\\"}","body":{"content":"{\\"count\\":1,\\"data\\":[{\\"id\\":1,\\"name\\":\\"TEST00001\\",\\"note\\":\\"test\\",\\"price\\":1000000,\\"createDate\\":\\"2023-01-01T15:00:00.000Z\\"}]}"}},"response":{"status_code":200}},"trace":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d"},"url":{"full":"http://localhost:8088/api/test","path":"/api/test"},"user_agent":{"original":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"},"client":{"port":59826}}'
+    // @ts-expect-error
+    expect(requestLog[Symbol.for('message')]).toBe(
+      '{"@timestamp":"2022-01-10T00:00:00.000Z","log":{"level":"info"},"message":"[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\\r\\n<- 200 - 104ms","ecs":{"version":"8.10.0"},"tags":["request"],"service":{},"host":{},"user":{"id":"1","name":"windy","email":"bm.yoon@ecubelabs.com"},"http":{"version":"1.1","request":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d","method":"GET","headers":"{\\"host\\":\\"localhost:8088\\",\\"connection\\":\\"keep-alive\\",\\"sec-ch-ua\\":\\"\\\\\\"Not?A_Brand\\\\\\";v=\\\\\\"8\\\\\\", \\\\\\"Chromium\\\\\\";v=\\\\\\"108\\\\\\", \\\\\\"Google Chrome\\\\\\";v=\\\\\\"108\\\\\\"\\",\\"accept\\":\\"application/json, text/plain, */*\\",\\"sec-ch-ua-mobile\\":\\"?0\\",\\"authorization\\":\\"Bearer testcodetoken\\",\\"user-agent\\":\\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36\\",\\"sec-ch-ua-platform\\":\\"\\\\\\"macOS\\\\\\"\\",\\"origin\\":\\"http://localhost:9000\\",\\"sec-fetch-site\\":\\"same-site\\",\\"sec-fetch-mode\\":\\"cors\\",\\"sec-fetch-dest\\":\\"empty\\",\\"referer\\":\\"http://localhost:9000/\\",\\"accept-encoding\\":\\"gzip, deflate, br\\",\\"accept-language\\":\\"ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7\\"}","body":{"content":"{\\"count\\":1,\\"data\\":[{\\"id\\":1,\\"name\\":\\"TEST00001\\",\\"note\\":\\"test\\",\\"price\\":1000000,\\"createDate\\":\\"2023-01-01T15:00:00.000Z\\"}]}"}},"response":{"status_code":200}},"trace":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d"},"url":{"full":"http://localhost:8088/api/test","path":"/api/test"},"user_agent":{"original":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"},"client":{"port":59826}}',
     );
   });
 
-  test("error log format", () => {
+  test('error log format', () => {
     const errorLog = ecsTransformer({
-      level: "error",
-      message:
-        "[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\r\n<- 404 - 47ms",
+      level: 'error',
+      message: '[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\r\n<- 404 - 47ms',
       ctx: {
         request: {
-          ip: "::ffff:172.18.0.1",
+          ip: '::ffff:172.18.0.1',
           socket: { remotePort: 61294 },
-          method: "GET",
+          method: 'GET',
           header: {
-            host: "localhost:8088",
-            connection: "keep-alive",
-            "sec-ch-ua":
-              '"Not?A_Brand";v="8", "Chromium";v="108", "Google Chrome";v="108"',
-            accept: "application/json, text/plain, */*",
-            "sec-ch-ua-mobile": "?0",
-            authorization: "Bearer testcodetoken",
-            "user-agent":
-              "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
-            "sec-ch-ua-platform": '"macOS"',
-            origin: "http://localhost:9000",
-            "sec-fetch-site": "same-site",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-dest": "empty",
-            referer: "http://localhost:9000/",
-            "accept-encoding": "gzip, deflate, br",
-            "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+            host: 'localhost:8088',
+            connection: 'keep-alive',
+            'sec-ch-ua': '"Not?A_Brand";v="8", "Chromium";v="108", "Google Chrome";v="108"',
+            accept: 'application/json, text/plain, */*',
+            'sec-ch-ua-mobile': '?0',
+            authorization: 'Bearer testcodetoken',
+            'user-agent':
+              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+            'sec-ch-ua-platform': '"macOS"',
+            origin: 'http://localhost:9000',
+            'sec-fetch-site': 'same-site',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-dest': 'empty',
+            referer: 'http://localhost:9000/',
+            'accept-encoding': 'gzip, deflate, br',
+            'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
           },
           body: {
             count: 1,
             data: [
               {
                 id: 1,
-                name: "TEST00001",
-                note: "test",
+                name: 'TEST00001',
+                note: 'test',
                 price: 1000000,
-                createDate: "2023-01-01T15:00:00.000Z",
+                createDate: '2023-01-01T15:00:00.000Z',
               },
             ],
           },
         },
-        req: { url: "/api/test", httpVersion: "1.1" },
-        URL: { href: "http://localhost:8088/api/test" },
+        req: { url: '/api/test', httpVersion: '1.1' },
+        URL: { href: 'http://localhost:8088/api/test' },
         response: {
           status: 404,
           headers: {
-            "x-powered-by": "Express",
-            vary: "Origin",
-            "access-control-allow-origin": "http://localhost:9000",
-            "content-type": "application/json; charset=utf-8",
+            'x-powered-by': 'Express',
+            vary: 'Origin',
+            'access-control-allow-origin': 'http://localhost:9000',
+            'content-type': 'application/json; charset=utf-8',
           },
         },
       } as unknown as Context,
-      user: { id: "1", name: "windy", email: "bm.yoon@ecubelabs.com" },
-      txId: "b9612167-8cb4-43f2-a90e-e02cd259e81d",
+      user: { id: '1', name: 'windy', email: 'bm.yoon@ecubelabs.com' },
+      txId: 'b9612167-8cb4-43f2-a90e-e02cd259e81d',
       err: {
-        name: "error",
-        message: "error",
+        name: 'error',
+        message: 'error',
         stack:
-          "Error: errror\n    at handler (/erp-api/src/routes/api/v3/invoices/get.ts:177:15)\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)\n    at validator (/erp-api/node_modules/koa-joi-router/joi-router.js:428:5)\n    at noopMiddleware (/erp-api/node_modules/koa-joi-router/joi-router.js:267:10)\n    at specExposer (/erp-api/node_modules/koa-joi-router/joi-router.js:452:5)\n    at prepareRequest (/erp-api/node_modules/koa-joi-router/joi-router.js:464:3)\n    at requestLoggerMiddleware (/erp-api/src/middlewares/request-logger.ts:10:9)\n    at errorHandlerMiddleware (/erp-api/src/middlewares/error-handler.ts:68:9)\n    at userHandlerMiddleware (/erp-api/src/middlewares/auth-handler.ts:28:5)\n    at dependencyInjectorMiddleware (/erp-api/src/middlewares/dependency-injector.ts:15:9)",
+          'Error: errror\n    at handler (/erp-api/src/routes/api/v3/invoices/get.ts:177:15)\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)\n    at validator (/erp-api/node_modules/koa-joi-router/joi-router.js:428:5)\n    at noopMiddleware (/erp-api/node_modules/koa-joi-router/joi-router.js:267:10)\n    at specExposer (/erp-api/node_modules/koa-joi-router/joi-router.js:452:5)\n    at prepareRequest (/erp-api/node_modules/koa-joi-router/joi-router.js:464:3)\n    at requestLoggerMiddleware (/erp-api/src/middlewares/request-logger.ts:10:9)\n    at errorHandlerMiddleware (/erp-api/src/middlewares/error-handler.ts:68:9)\n    at userHandlerMiddleware (/erp-api/src/middlewares/auth-handler.ts:28:5)\n    at dependencyInjectorMiddleware (/erp-api/src/middlewares/dependency-injector.ts:15:9)',
       },
     });
 
-    //@ts-expect-error
-    expect(errorLog[Symbol.for("message")]).toEqual(
-      '{"@timestamp":"2022-01-10T00:00:00.000Z","log":{"level":"error"},"message":"[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\\r\\n<- 404 - 47ms","ecs":{"version":"8.10.0"},"tags":["request"],"service":{},"host":{},"user":{"id":"1","name":"windy","email":"bm.yoon@ecubelabs.com"},"http":{"version":"1.1","request":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d","method":"GET","headers":"{\\"host\\":\\"localhost:8088\\",\\"connection\\":\\"keep-alive\\",\\"sec-ch-ua\\":\\"\\\\\\"Not?A_Brand\\\\\\";v=\\\\\\"8\\\\\\", \\\\\\"Chromium\\\\\\";v=\\\\\\"108\\\\\\", \\\\\\"Google Chrome\\\\\\";v=\\\\\\"108\\\\\\"\\",\\"accept\\":\\"application/json, text/plain, */*\\",\\"sec-ch-ua-mobile\\":\\"?0\\",\\"authorization\\":\\"Bearer testcodetoken\\",\\"user-agent\\":\\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36\\",\\"sec-ch-ua-platform\\":\\"\\\\\\"macOS\\\\\\"\\",\\"origin\\":\\"http://localhost:9000\\",\\"sec-fetch-site\\":\\"same-site\\",\\"sec-fetch-mode\\":\\"cors\\",\\"sec-fetch-dest\\":\\"empty\\",\\"referer\\":\\"http://localhost:9000/\\",\\"accept-encoding\\":\\"gzip, deflate, br\\",\\"accept-language\\":\\"ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7\\"}","body":{"content":"{\\"count\\":1,\\"data\\":[{\\"id\\":1,\\"name\\":\\"TEST00001\\",\\"note\\":\\"test\\",\\"price\\":1000000,\\"createDate\\":\\"2023-01-01T15:00:00.000Z\\"}]}"}},"response":{"status_code":404}},"trace":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d"},"url":{"full":"http://localhost:8088/api/test","path":"/api/test"},"user_agent":{"original":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"},"client":{"port":61294},"error":{"message":"error","stack_trace":"Error: errror\\n    at handler (/erp-api/src/routes/api/v3/invoices/get.ts:177:15)\\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)\\n    at validator (/erp-api/node_modules/koa-joi-router/joi-router.js:428:5)\\n    at noopMiddleware (/erp-api/node_modules/koa-joi-router/joi-router.js:267:10)\\n    at specExposer (/erp-api/node_modules/koa-joi-router/joi-router.js:452:5)\\n    at prepareRequest (/erp-api/node_modules/koa-joi-router/joi-router.js:464:3)\\n    at requestLoggerMiddleware (/erp-api/src/middlewares/request-logger.ts:10:9)\\n    at errorHandlerMiddleware (/erp-api/src/middlewares/error-handler.ts:68:9)\\n    at userHandlerMiddleware (/erp-api/src/middlewares/auth-handler.ts:28:5)\\n    at dependencyInjectorMiddleware (/erp-api/src/middlewares/dependency-injector.ts:15:9)"}}'
+    // @ts-expect-error
+    expect(errorLog[Symbol.for('message')]).toBe(
+      '{"@timestamp":"2022-01-10T00:00:00.000Z","log":{"level":"error"},"message":"[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\\r\\n<- 404 - 47ms","ecs":{"version":"8.10.0"},"tags":["request"],"service":{},"host":{},"user":{"id":"1","name":"windy","email":"bm.yoon@ecubelabs.com"},"http":{"version":"1.1","request":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d","method":"GET","headers":"{\\"host\\":\\"localhost:8088\\",\\"connection\\":\\"keep-alive\\",\\"sec-ch-ua\\":\\"\\\\\\"Not?A_Brand\\\\\\";v=\\\\\\"8\\\\\\", \\\\\\"Chromium\\\\\\";v=\\\\\\"108\\\\\\", \\\\\\"Google Chrome\\\\\\";v=\\\\\\"108\\\\\\"\\",\\"accept\\":\\"application/json, text/plain, */*\\",\\"sec-ch-ua-mobile\\":\\"?0\\",\\"authorization\\":\\"Bearer testcodetoken\\",\\"user-agent\\":\\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36\\",\\"sec-ch-ua-platform\\":\\"\\\\\\"macOS\\\\\\"\\",\\"origin\\":\\"http://localhost:9000\\",\\"sec-fetch-site\\":\\"same-site\\",\\"sec-fetch-mode\\":\\"cors\\",\\"sec-fetch-dest\\":\\"empty\\",\\"referer\\":\\"http://localhost:9000/\\",\\"accept-encoding\\":\\"gzip, deflate, br\\",\\"accept-language\\":\\"ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7\\"}","body":{"content":"{\\"count\\":1,\\"data\\":[{\\"id\\":1,\\"name\\":\\"TEST00001\\",\\"note\\":\\"test\\",\\"price\\":1000000,\\"createDate\\":\\"2023-01-01T15:00:00.000Z\\"}]}"}},"response":{"status_code":404}},"trace":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d"},"url":{"full":"http://localhost:8088/api/test","path":"/api/test"},"user_agent":{"original":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"},"client":{"port":61294},"error":{"message":"error","stack_trace":"Error: errror\\n    at handler (/erp-api/src/routes/api/v3/invoices/get.ts:177:15)\\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)\\n    at validator (/erp-api/node_modules/koa-joi-router/joi-router.js:428:5)\\n    at noopMiddleware (/erp-api/node_modules/koa-joi-router/joi-router.js:267:10)\\n    at specExposer (/erp-api/node_modules/koa-joi-router/joi-router.js:452:5)\\n    at prepareRequest (/erp-api/node_modules/koa-joi-router/joi-router.js:464:3)\\n    at requestLoggerMiddleware (/erp-api/src/middlewares/request-logger.ts:10:9)\\n    at errorHandlerMiddleware (/erp-api/src/middlewares/error-handler.ts:68:9)\\n    at userHandlerMiddleware (/erp-api/src/middlewares/auth-handler.ts:28:5)\\n    at dependencyInjectorMiddleware (/erp-api/src/middlewares/dependency-injector.ts:15:9)","type":"error"}}',
     );
   });
 
-  describe("client 필드에 대한 테스트", () => {
-    test("1순위로는 x-forwarded-for 중 가장 왼쪽 IP를 최초 client IP로 간주한다.", () => {
+  describe('client 필드에 대한 테스트', () => {
+    test('1순위로는 x-forwarded-for 중 가장 왼쪽 IP를 최초 client IP로 간주한다.', () => {
       const requestLog = ecsTransformer({
-        level: "info",
-        message:
-          "[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\r\n<- 200 - 104ms",
+        level: 'info',
+        message: '[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\r\n<- 200 - 104ms',
         ctx: {
           request: {
-            ip: "::ffff:172.18.0.1",
-            socket: { remotePort: 59826, remoteAddress: "255.255.255.255" },
-            method: "GET",
+            ip: '::ffff:172.18.0.1',
+            socket: { remotePort: 59826, remoteAddress: '255.255.255.255' },
+            method: 'GET',
             header: {
-              host: "localhost:8088",
-              connection: "keep-alive",
-              "sec-ch-ua":
-                '"Not?A_Brand";v="8", "Chromium";v="108", "Google Chrome";v="108"',
-              accept: "application/json, text/plain, */*",
-              "sec-ch-ua-mobile": "?0",
-              authorization: "Bearer testcodetoken",
-              "user-agent":
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
-              "sec-ch-ua-platform": '"macOS"',
-              origin: "http://localhost:9000",
-              "sec-fetch-site": "same-site",
-              "sec-fetch-mode": "cors",
-              "sec-fetch-dest": "empty",
-              referer: "http://localhost:9000/",
-              "accept-encoding": "gzip, deflate, br",
-              "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-              "x-real-ip": "200.123.123.267",
-              "x-forwarded-for": "200.123.123.267, 111.222.111.222",
+              host: 'localhost:8088',
+              connection: 'keep-alive',
+              'sec-ch-ua': '"Not?A_Brand";v="8", "Chromium";v="108", "Google Chrome";v="108"',
+              accept: 'application/json, text/plain, */*',
+              'sec-ch-ua-mobile': '?0',
+              authorization: 'Bearer testcodetoken',
+              'user-agent':
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+              'sec-ch-ua-platform': '"macOS"',
+              origin: 'http://localhost:9000',
+              'sec-fetch-site': 'same-site',
+              'sec-fetch-mode': 'cors',
+              'sec-fetch-dest': 'empty',
+              referer: 'http://localhost:9000/',
+              'accept-encoding': 'gzip, deflate, br',
+              'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+              'x-real-ip': '200.123.123.267',
+              'x-forwarded-for': '200.123.123.267, 111.222.111.222',
             },
             body: {
               count: 1,
               data: [
                 {
                   id: 1,
-                  name: "TEST00001",
-                  note: "test",
+                  name: 'TEST00001',
+                  note: 'test',
                   price: 1000000,
-                  createDate: "2023-01-01T15:00:00.000Z",
+                  createDate: '2023-01-01T15:00:00.000Z',
                 },
               ],
             },
           },
-          req: { url: "/api/test", httpVersion: "1.1" },
-          URL: { href: "http://localhost:8088/api/test" },
+          req: { url: '/api/test', httpVersion: '1.1' },
+          URL: { href: 'http://localhost:8088/api/test' },
           response: {
             status: 200,
             headers: {
-              "x-powered-by": "Express",
-              vary: "Origin",
-              "access-control-allow-origin": "http://localhost:9000",
-              "content-type": "application/json; charset=utf-8",
+              'x-powered-by': 'Express',
+              vary: 'Origin',
+              'access-control-allow-origin': 'http://localhost:9000',
+              'content-type': 'application/json; charset=utf-8',
             },
           },
         } as unknown as Context,
-        user: { id: "1", name: "windy", email: "bm.yoon@ecubelabs.com" },
-        txId: "b9612167-8cb4-43f2-a90e-e02cd259e81d",
+        user: { id: '1', name: 'windy', email: 'bm.yoon@ecubelabs.com' },
+        txId: 'b9612167-8cb4-43f2-a90e-e02cd259e81d',
       });
 
-      //@ts-expect-error
-      expect(requestLog[Symbol.for("message")]).toEqual(
-        '{"@timestamp":"2022-01-10T00:00:00.000Z","log":{"level":"info"},"message":"[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\\r\\n<- 200 - 104ms","ecs":{"version":"8.10.0"},"tags":["request"],"service":{},"host":{},"user":{"id":"1","name":"windy","email":"bm.yoon@ecubelabs.com"},"http":{"version":"1.1","request":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d","method":"GET","headers":"{\\"host\\":\\"localhost:8088\\",\\"connection\\":\\"keep-alive\\",\\"sec-ch-ua\\":\\"\\\\\\"Not?A_Brand\\\\\\";v=\\\\\\"8\\\\\\", \\\\\\"Chromium\\\\\\";v=\\\\\\"108\\\\\\", \\\\\\"Google Chrome\\\\\\";v=\\\\\\"108\\\\\\"\\",\\"accept\\":\\"application/json, text/plain, */*\\",\\"sec-ch-ua-mobile\\":\\"?0\\",\\"authorization\\":\\"Bearer testcodetoken\\",\\"user-agent\\":\\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36\\",\\"sec-ch-ua-platform\\":\\"\\\\\\"macOS\\\\\\"\\",\\"origin\\":\\"http://localhost:9000\\",\\"sec-fetch-site\\":\\"same-site\\",\\"sec-fetch-mode\\":\\"cors\\",\\"sec-fetch-dest\\":\\"empty\\",\\"referer\\":\\"http://localhost:9000/\\",\\"accept-encoding\\":\\"gzip, deflate, br\\",\\"accept-language\\":\\"ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7\\",\\"x-real-ip\\":\\"200.123.123.267\\",\\"x-forwarded-for\\":\\"200.123.123.267, 111.222.111.222\\"}","body":{"content":"{\\"count\\":1,\\"data\\":[{\\"id\\":1,\\"name\\":\\"TEST00001\\",\\"note\\":\\"test\\",\\"price\\":1000000,\\"createDate\\":\\"2023-01-01T15:00:00.000Z\\"}]}"}},"response":{"status_code":200}},"trace":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d"},"url":{"full":"http://localhost:8088/api/test","path":"/api/test"},"user_agent":{"original":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"},"client":{"ip":"200.123.123.267","address":"200.123.123.267","port":59826}}'
+      // @ts-expect-error
+      expect(requestLog[Symbol.for('message')]).toBe(
+        '{"@timestamp":"2022-01-10T00:00:00.000Z","log":{"level":"info"},"message":"[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\\r\\n<- 200 - 104ms","ecs":{"version":"8.10.0"},"tags":["request"],"service":{},"host":{},"user":{"id":"1","name":"windy","email":"bm.yoon@ecubelabs.com"},"http":{"version":"1.1","request":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d","method":"GET","headers":"{\\"host\\":\\"localhost:8088\\",\\"connection\\":\\"keep-alive\\",\\"sec-ch-ua\\":\\"\\\\\\"Not?A_Brand\\\\\\";v=\\\\\\"8\\\\\\", \\\\\\"Chromium\\\\\\";v=\\\\\\"108\\\\\\", \\\\\\"Google Chrome\\\\\\";v=\\\\\\"108\\\\\\"\\",\\"accept\\":\\"application/json, text/plain, */*\\",\\"sec-ch-ua-mobile\\":\\"?0\\",\\"authorization\\":\\"Bearer testcodetoken\\",\\"user-agent\\":\\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36\\",\\"sec-ch-ua-platform\\":\\"\\\\\\"macOS\\\\\\"\\",\\"origin\\":\\"http://localhost:9000\\",\\"sec-fetch-site\\":\\"same-site\\",\\"sec-fetch-mode\\":\\"cors\\",\\"sec-fetch-dest\\":\\"empty\\",\\"referer\\":\\"http://localhost:9000/\\",\\"accept-encoding\\":\\"gzip, deflate, br\\",\\"accept-language\\":\\"ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7\\",\\"x-real-ip\\":\\"200.123.123.267\\",\\"x-forwarded-for\\":\\"200.123.123.267, 111.222.111.222\\"}","body":{"content":"{\\"count\\":1,\\"data\\":[{\\"id\\":1,\\"name\\":\\"TEST00001\\",\\"note\\":\\"test\\",\\"price\\":1000000,\\"createDate\\":\\"2023-01-01T15:00:00.000Z\\"}]}"}},"response":{"status_code":200}},"trace":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d"},"url":{"full":"http://localhost:8088/api/test","path":"/api/test"},"user_agent":{"original":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"},"client":{"ip":"200.123.123.267","address":"200.123.123.267","port":59826}}',
       );
     });
 
-    test("x-forwarded-for가 없으면 2순위로 x-real-ip를 최초 client IP로 간주한다.", () => {
+    test('x-forwarded-for가 없으면 2순위로 x-real-ip를 최초 client IP로 간주한다.', () => {
       const requestLog = ecsTransformer({
-        level: "info",
-        message:
-          "[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\r\n<- 200 - 104ms",
+        level: 'info',
+        message: '[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\r\n<- 200 - 104ms',
         ctx: {
           request: {
-            ip: "::ffff:172.18.0.1",
-            socket: { remotePort: 59826, remoteAddress: "255.255.255.255" },
-            method: "GET",
+            ip: '::ffff:172.18.0.1',
+            socket: { remotePort: 59826, remoteAddress: '255.255.255.255' },
+            method: 'GET',
             header: {
-              host: "localhost:8088",
-              connection: "keep-alive",
-              "sec-ch-ua":
-                '"Not?A_Brand";v="8", "Chromium";v="108", "Google Chrome";v="108"',
-              accept: "application/json, text/plain, */*",
-              "sec-ch-ua-mobile": "?0",
-              authorization: "Bearer testcodetoken",
-              "user-agent":
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
-              "sec-ch-ua-platform": '"macOS"',
-              origin: "http://localhost:9000",
-              "sec-fetch-site": "same-site",
-              "sec-fetch-mode": "cors",
-              "sec-fetch-dest": "empty",
-              referer: "http://localhost:9000/",
-              "accept-encoding": "gzip, deflate, br",
-              "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-              "x-real-ip": "100.200.255.255",
+              host: 'localhost:8088',
+              connection: 'keep-alive',
+              'sec-ch-ua': '"Not?A_Brand";v="8", "Chromium";v="108", "Google Chrome";v="108"',
+              accept: 'application/json, text/plain, */*',
+              'sec-ch-ua-mobile': '?0',
+              authorization: 'Bearer testcodetoken',
+              'user-agent':
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+              'sec-ch-ua-platform': '"macOS"',
+              origin: 'http://localhost:9000',
+              'sec-fetch-site': 'same-site',
+              'sec-fetch-mode': 'cors',
+              'sec-fetch-dest': 'empty',
+              referer: 'http://localhost:9000/',
+              'accept-encoding': 'gzip, deflate, br',
+              'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+              'x-real-ip': '100.200.255.255',
             },
             body: {
               count: 1,
               data: [
                 {
                   id: 1,
-                  name: "TEST00001",
-                  note: "test",
+                  name: 'TEST00001',
+                  note: 'test',
                   price: 1000000,
-                  createDate: "2023-01-01T15:00:00.000Z",
+                  createDate: '2023-01-01T15:00:00.000Z',
                 },
               ],
             },
           },
-          req: { url: "/api/test", httpVersion: "1.1" },
-          URL: { href: "http://localhost:8088/api/test" },
+          req: { url: '/api/test', httpVersion: '1.1' },
+          URL: { href: 'http://localhost:8088/api/test' },
           response: {
             status: 200,
             headers: {
-              "x-powered-by": "Express",
-              vary: "Origin",
-              "access-control-allow-origin": "http://localhost:9000",
-              "content-type": "application/json; charset=utf-8",
+              'x-powered-by': 'Express',
+              vary: 'Origin',
+              'access-control-allow-origin': 'http://localhost:9000',
+              'content-type': 'application/json; charset=utf-8',
             },
           },
         } as unknown as Context,
-        user: { id: "1", name: "windy", email: "bm.yoon@ecubelabs.com" },
-        txId: "b9612167-8cb4-43f2-a90e-e02cd259e81d",
+        user: { id: '1', name: 'windy', email: 'bm.yoon@ecubelabs.com' },
+        txId: 'b9612167-8cb4-43f2-a90e-e02cd259e81d',
       });
 
-      //@ts-expect-error
-      expect(requestLog[Symbol.for("message")]).toEqual(
-        '{"@timestamp":"2022-01-10T00:00:00.000Z","log":{"level":"info"},"message":"[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\\r\\n<- 200 - 104ms","ecs":{"version":"8.10.0"},"tags":["request"],"service":{},"host":{},"user":{"id":"1","name":"windy","email":"bm.yoon@ecubelabs.com"},"http":{"version":"1.1","request":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d","method":"GET","headers":"{\\"host\\":\\"localhost:8088\\",\\"connection\\":\\"keep-alive\\",\\"sec-ch-ua\\":\\"\\\\\\"Not?A_Brand\\\\\\";v=\\\\\\"8\\\\\\", \\\\\\"Chromium\\\\\\";v=\\\\\\"108\\\\\\", \\\\\\"Google Chrome\\\\\\";v=\\\\\\"108\\\\\\"\\",\\"accept\\":\\"application/json, text/plain, */*\\",\\"sec-ch-ua-mobile\\":\\"?0\\",\\"authorization\\":\\"Bearer testcodetoken\\",\\"user-agent\\":\\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36\\",\\"sec-ch-ua-platform\\":\\"\\\\\\"macOS\\\\\\"\\",\\"origin\\":\\"http://localhost:9000\\",\\"sec-fetch-site\\":\\"same-site\\",\\"sec-fetch-mode\\":\\"cors\\",\\"sec-fetch-dest\\":\\"empty\\",\\"referer\\":\\"http://localhost:9000/\\",\\"accept-encoding\\":\\"gzip, deflate, br\\",\\"accept-language\\":\\"ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7\\",\\"x-real-ip\\":\\"100.200.255.255\\"}","body":{"content":"{\\"count\\":1,\\"data\\":[{\\"id\\":1,\\"name\\":\\"TEST00001\\",\\"note\\":\\"test\\",\\"price\\":1000000,\\"createDate\\":\\"2023-01-01T15:00:00.000Z\\"}]}"}},"response":{"status_code":200}},"trace":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d"},"url":{"full":"http://localhost:8088/api/test","path":"/api/test"},"user_agent":{"original":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"},"client":{"ip":"100.200.255.255","address":"100.200.255.255","port":59826}}'
+      // @ts-expect-error
+      expect(requestLog[Symbol.for('message')]).toBe(
+        '{"@timestamp":"2022-01-10T00:00:00.000Z","log":{"level":"info"},"message":"[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\\r\\n<- 200 - 104ms","ecs":{"version":"8.10.0"},"tags":["request"],"service":{},"host":{},"user":{"id":"1","name":"windy","email":"bm.yoon@ecubelabs.com"},"http":{"version":"1.1","request":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d","method":"GET","headers":"{\\"host\\":\\"localhost:8088\\",\\"connection\\":\\"keep-alive\\",\\"sec-ch-ua\\":\\"\\\\\\"Not?A_Brand\\\\\\";v=\\\\\\"8\\\\\\", \\\\\\"Chromium\\\\\\";v=\\\\\\"108\\\\\\", \\\\\\"Google Chrome\\\\\\";v=\\\\\\"108\\\\\\"\\",\\"accept\\":\\"application/json, text/plain, */*\\",\\"sec-ch-ua-mobile\\":\\"?0\\",\\"authorization\\":\\"Bearer testcodetoken\\",\\"user-agent\\":\\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36\\",\\"sec-ch-ua-platform\\":\\"\\\\\\"macOS\\\\\\"\\",\\"origin\\":\\"http://localhost:9000\\",\\"sec-fetch-site\\":\\"same-site\\",\\"sec-fetch-mode\\":\\"cors\\",\\"sec-fetch-dest\\":\\"empty\\",\\"referer\\":\\"http://localhost:9000/\\",\\"accept-encoding\\":\\"gzip, deflate, br\\",\\"accept-language\\":\\"ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7\\",\\"x-real-ip\\":\\"100.200.255.255\\"}","body":{"content":"{\\"count\\":1,\\"data\\":[{\\"id\\":1,\\"name\\":\\"TEST00001\\",\\"note\\":\\"test\\",\\"price\\":1000000,\\"createDate\\":\\"2023-01-01T15:00:00.000Z\\"}]}"}},"response":{"status_code":200}},"trace":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d"},"url":{"full":"http://localhost:8088/api/test","path":"/api/test"},"user_agent":{"original":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"},"client":{"ip":"100.200.255.255","address":"100.200.255.255","port":59826}}',
       );
     });
 
-    test("x-real-ip가 없으면 3순위로 remoteAddress를 client IP로 간주한다", () => {
+    test('x-real-ip가 없으면 3순위로 remoteAddress를 client IP로 간주한다', () => {
       const requestLog = ecsTransformer({
-        level: "info",
-        message:
-          "[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\r\n<- 200 - 104ms",
+        level: 'info',
+        message: '[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\r\n<- 200 - 104ms',
         ctx: {
           request: {
-            ip: "::ffff:172.18.0.1",
-            socket: { remotePort: 59826, remoteAddress: "255.255.255.255" },
-            method: "GET",
+            ip: '::ffff:172.18.0.1',
+            socket: { remotePort: 59826, remoteAddress: '255.255.255.255' },
+            method: 'GET',
             header: {
-              host: "localhost:8088",
-              connection: "keep-alive",
-              "sec-ch-ua":
-                '"Not?A_Brand";v="8", "Chromium";v="108", "Google Chrome";v="108"',
-              accept: "application/json, text/plain, */*",
-              "sec-ch-ua-mobile": "?0",
-              authorization: "Bearer testcodetoken",
-              "user-agent":
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
-              "sec-ch-ua-platform": '"macOS"',
-              origin: "http://localhost:9000",
-              "sec-fetch-site": "same-site",
-              "sec-fetch-mode": "cors",
-              "sec-fetch-dest": "empty",
-              referer: "http://localhost:9000/",
-              "accept-encoding": "gzip, deflate, br",
-              "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+              host: 'localhost:8088',
+              connection: 'keep-alive',
+              'sec-ch-ua': '"Not?A_Brand";v="8", "Chromium";v="108", "Google Chrome";v="108"',
+              accept: 'application/json, text/plain, */*',
+              'sec-ch-ua-mobile': '?0',
+              authorization: 'Bearer testcodetoken',
+              'user-agent':
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+              'sec-ch-ua-platform': '"macOS"',
+              origin: 'http://localhost:9000',
+              'sec-fetch-site': 'same-site',
+              'sec-fetch-mode': 'cors',
+              'sec-fetch-dest': 'empty',
+              referer: 'http://localhost:9000/',
+              'accept-encoding': 'gzip, deflate, br',
+              'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
             },
             body: {
               count: 1,
               data: [
                 {
                   id: 1,
-                  name: "TEST00001",
-                  note: "test",
+                  name: 'TEST00001',
+                  note: 'test',
                   price: 1000000,
-                  createDate: "2023-01-01T15:00:00.000Z",
+                  createDate: '2023-01-01T15:00:00.000Z',
                 },
               ],
             },
           },
-          req: { url: "/api/test", httpVersion: "1.1" },
-          URL: { href: "http://localhost:8088/api/test" },
+          req: { url: '/api/test', httpVersion: '1.1' },
+          URL: { href: 'http://localhost:8088/api/test' },
           response: {
             status: 200,
             headers: {
-              "x-powered-by": "Express",
-              vary: "Origin",
-              "access-control-allow-origin": "http://localhost:9000",
-              "content-type": "application/json; charset=utf-8",
+              'x-powered-by': 'Express',
+              vary: 'Origin',
+              'access-control-allow-origin': 'http://localhost:9000',
+              'content-type': 'application/json; charset=utf-8',
             },
           },
         } as unknown as Context,
-        user: { id: "1", name: "windy", email: "bm.yoon@ecubelabs.com" },
-        txId: "b9612167-8cb4-43f2-a90e-e02cd259e81d",
+        user: { id: '1', name: 'windy', email: 'bm.yoon@ecubelabs.com' },
+        txId: 'b9612167-8cb4-43f2-a90e-e02cd259e81d',
       });
 
-      //@ts-expect-error
-      expect(requestLog[Symbol.for("message")]).toEqual(
-        '{"@timestamp":"2022-01-10T00:00:00.000Z","log":{"level":"info"},"message":"[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\\r\\n<- 200 - 104ms","ecs":{"version":"8.10.0"},"tags":["request"],"service":{},"host":{},"user":{"id":"1","name":"windy","email":"bm.yoon@ecubelabs.com"},"http":{"version":"1.1","request":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d","method":"GET","headers":"{\\"host\\":\\"localhost:8088\\",\\"connection\\":\\"keep-alive\\",\\"sec-ch-ua\\":\\"\\\\\\"Not?A_Brand\\\\\\";v=\\\\\\"8\\\\\\", \\\\\\"Chromium\\\\\\";v=\\\\\\"108\\\\\\", \\\\\\"Google Chrome\\\\\\";v=\\\\\\"108\\\\\\"\\",\\"accept\\":\\"application/json, text/plain, */*\\",\\"sec-ch-ua-mobile\\":\\"?0\\",\\"authorization\\":\\"Bearer testcodetoken\\",\\"user-agent\\":\\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36\\",\\"sec-ch-ua-platform\\":\\"\\\\\\"macOS\\\\\\"\\",\\"origin\\":\\"http://localhost:9000\\",\\"sec-fetch-site\\":\\"same-site\\",\\"sec-fetch-mode\\":\\"cors\\",\\"sec-fetch-dest\\":\\"empty\\",\\"referer\\":\\"http://localhost:9000/\\",\\"accept-encoding\\":\\"gzip, deflate, br\\",\\"accept-language\\":\\"ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7\\"}","body":{"content":"{\\"count\\":1,\\"data\\":[{\\"id\\":1,\\"name\\":\\"TEST00001\\",\\"note\\":\\"test\\",\\"price\\":1000000,\\"createDate\\":\\"2023-01-01T15:00:00.000Z\\"}]}"}},"response":{"status_code":200}},"trace":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d"},"url":{"full":"http://localhost:8088/api/test","path":"/api/test"},"user_agent":{"original":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"},"client":{"ip":"255.255.255.255","address":"255.255.255.255","port":59826}}'
+      // @ts-expect-error
+      expect(requestLog[Symbol.for('message')]).toBe(
+        '{"@timestamp":"2022-01-10T00:00:00.000Z","log":{"level":"info"},"message":"[GET, b9612167-8cb4-43f2-a90e-e02cd259e81d] -> /api/test\\r\\n<- 200 - 104ms","ecs":{"version":"8.10.0"},"tags":["request"],"service":{},"host":{},"user":{"id":"1","name":"windy","email":"bm.yoon@ecubelabs.com"},"http":{"version":"1.1","request":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d","method":"GET","headers":"{\\"host\\":\\"localhost:8088\\",\\"connection\\":\\"keep-alive\\",\\"sec-ch-ua\\":\\"\\\\\\"Not?A_Brand\\\\\\";v=\\\\\\"8\\\\\\", \\\\\\"Chromium\\\\\\";v=\\\\\\"108\\\\\\", \\\\\\"Google Chrome\\\\\\";v=\\\\\\"108\\\\\\"\\",\\"accept\\":\\"application/json, text/plain, */*\\",\\"sec-ch-ua-mobile\\":\\"?0\\",\\"authorization\\":\\"Bearer testcodetoken\\",\\"user-agent\\":\\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36\\",\\"sec-ch-ua-platform\\":\\"\\\\\\"macOS\\\\\\"\\",\\"origin\\":\\"http://localhost:9000\\",\\"sec-fetch-site\\":\\"same-site\\",\\"sec-fetch-mode\\":\\"cors\\",\\"sec-fetch-dest\\":\\"empty\\",\\"referer\\":\\"http://localhost:9000/\\",\\"accept-encoding\\":\\"gzip, deflate, br\\",\\"accept-language\\":\\"ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7\\"}","body":{"content":"{\\"count\\":1,\\"data\\":[{\\"id\\":1,\\"name\\":\\"TEST00001\\",\\"note\\":\\"test\\",\\"price\\":1000000,\\"createDate\\":\\"2023-01-01T15:00:00.000Z\\"}]}"}},"response":{"status_code":200}},"trace":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d"},"url":{"full":"http://localhost:8088/api/test","path":"/api/test"},"user_agent":{"original":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"},"client":{"ip":"255.255.255.255","address":"255.255.255.255","port":59826}}',
       );
     });
   });
 
-  describe("device 필드", () => {
-    test("device 필드가 존재하는 경우", () => {
+  describe('device 필드', () => {
+    test('device 필드가 존재하는 경우', () => {
       const errorLog = ecsTransformer({
-        level: "error",
-        message: "Task parseAndValidate aborted with Error: Failed to parse payload.",
-        txId: "b9612167-8cb4-43f2-a90e-e02cd259e81d",
+        level: 'error',
+        message: 'Task parseAndValidate aborted with Error: Failed to parse payload.',
+        txId: 'b9612167-8cb4-43f2-a90e-e02cd259e81d',
         err: {
-          name: "ProtocolError",
-          message: "Failed to parse payload",
+          name: 'ProtocolError',
+          message: 'Failed to parse payload',
           stack:
-          "ProtocolError: Failed to parse payload\n    at Object.parseAndValidate (/tracker-server/apps/tracker-server/app/tasks/parseAndValidate.ts:34:15)\n    at applyFunction (/tracker-server/apps/tracker-server/app/flow.js:149:39)\n    at /tracker-server/node_modules/async/dist/async.js:151:38\n    at runTask (/tracker-server/node_modules/async/dist/async.js:1157:17)\n    at /tracker-server/node_modules/async/dist/async.js:1093:35\n    at processQueue (/tracker-server/node_modules/async/dist/async.js:1103:17)\n    at Object.auto (/tracker-server/node_modules/async/dist/async.js:1090:9)\n    at Object.mainFlow (/tracker-server/apps/tracker-server/app/flow.js:33:15)\n    at /tracker-server/apps/tracker-server/app/routes/index.ts:33:14\n    at dispatch (/tracker-server/node_modules/@koa/router/node_modules/koa-compose/index.js:44:32)",
+            'ProtocolError: Failed to parse payload\n    at Object.parseAndValidate (/tracker-server/apps/tracker-server/app/tasks/parseAndValidate.ts:34:15)\n    at applyFunction (/tracker-server/apps/tracker-server/app/flow.js:149:39)\n    at /tracker-server/node_modules/async/dist/async.js:151:38\n    at runTask (/tracker-server/node_modules/async/dist/async.js:1157:17)\n    at /tracker-server/node_modules/async/dist/async.js:1093:35\n    at processQueue (/tracker-server/node_modules/async/dist/async.js:1103:17)\n    at Object.auto (/tracker-server/node_modules/async/dist/async.js:1090:9)\n    at Object.mainFlow (/tracker-server/apps/tracker-server/app/flow.js:33:15)\n    at /tracker-server/apps/tracker-server/app/routes/index.ts:33:14\n    at dispatch (/tracker-server/node_modules/@koa/router/node_modules/koa-compose/index.js:44:32)',
         },
         device: {
-          id: '89314404000652545956'
-        }
+          id: '89314404000652545956',
+        },
       });
 
-      //@ts-expect-error
-      expect(errorLog[Symbol.for("message")]).toEqual(
-        '{\"@timestamp\":\"2022-01-10T00:00:00.000Z\",\"log\":{\"level\":\"error\"},\"message\":\"Task parseAndValidate aborted with Error: Failed to parse payload.\",\"ecs\":{\"version\":\"8.10.0\"},\"tags\":[\"request\"],\"service\":{},\"host\":{},\"http\":{\"request\":{\"id\":\"b9612167-8cb4-43f2-a90e-e02cd259e81d\"},\"response\":{}},\"trace\":{\"id\":\"b9612167-8cb4-43f2-a90e-e02cd259e81d\"},\"url\":{},\"user_agent\":{},\"client\":{},\"error\":{\"message\":\"Failed to parse payload\",\"stack_trace\":\"ProtocolError: Failed to parse payload\\n    at Object.parseAndValidate (/tracker-server/apps/tracker-server/app/tasks/parseAndValidate.ts:34:15)\\n    at applyFunction (/tracker-server/apps/tracker-server/app/flow.js:149:39)\\n    at /tracker-server/node_modules/async/dist/async.js:151:38\\n    at runTask (/tracker-server/node_modules/async/dist/async.js:1157:17)\\n    at /tracker-server/node_modules/async/dist/async.js:1093:35\\n    at processQueue (/tracker-server/node_modules/async/dist/async.js:1103:17)\\n    at Object.auto (/tracker-server/node_modules/async/dist/async.js:1090:9)\\n    at Object.mainFlow (/tracker-server/apps/tracker-server/app/flow.js:33:15)\\n    at /tracker-server/apps/tracker-server/app/routes/index.ts:33:14\\n    at dispatch (/tracker-server/node_modules/@koa/router/node_modules/koa-compose/index.js:44:32)\"},\"device\":{\"id\":\"89314404000652545956\"}}'
+      // @ts-expect-error
+      expect(errorLog[Symbol.for('message')]).toBe(
+        '{"@timestamp":"2022-01-10T00:00:00.000Z","log":{"level":"error"},"message":"Task parseAndValidate aborted with Error: Failed to parse payload.","ecs":{"version":"8.10.0"},"tags":["request"],"service":{},"host":{},"http":{"request":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d"},"response":{}},"trace":{"id":"b9612167-8cb4-43f2-a90e-e02cd259e81d"},"url":{},"user_agent":{},"client":{},"error":{"message":"Failed to parse payload","stack_trace":"ProtocolError: Failed to parse payload\\n    at Object.parseAndValidate (/tracker-server/apps/tracker-server/app/tasks/parseAndValidate.ts:34:15)\\n    at applyFunction (/tracker-server/apps/tracker-server/app/flow.js:149:39)\\n    at /tracker-server/node_modules/async/dist/async.js:151:38\\n    at runTask (/tracker-server/node_modules/async/dist/async.js:1157:17)\\n    at /tracker-server/node_modules/async/dist/async.js:1093:35\\n    at processQueue (/tracker-server/node_modules/async/dist/async.js:1103:17)\\n    at Object.auto (/tracker-server/node_modules/async/dist/async.js:1090:9)\\n    at Object.mainFlow (/tracker-server/apps/tracker-server/app/flow.js:33:15)\\n    at /tracker-server/apps/tracker-server/app/routes/index.ts:33:14\\n    at dispatch (/tracker-server/node_modules/@koa/router/node_modules/koa-compose/index.js:44:32)","type":"ProtocolError"},"device":{"id":"89314404000652545956"}}',
       );
     });
   });

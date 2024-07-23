@@ -1,6 +1,6 @@
-import type { Context } from "koa";
+import type { Context } from 'koa';
 
-const Message = Symbol.for("message");
+const Message = Symbol.for('message');
 
 /**
  * @see https://www.elastic.co/guide/en/ecs/8.10/ecs-device.html
@@ -13,7 +13,7 @@ type DeviceField = {
     name?: string;
   };
   [key: string]: any; // NOTE: ecs 확장을 위한 임의의 필드
-}
+};
 
 export const ecsTransformer = (
   info: {
@@ -26,7 +26,7 @@ export const ecsTransformer = (
     tags?: string[];
     device?: DeviceField;
   },
-  options?: Record<string, any>
+  options?: Record<string, any>,
 ) => {
   const { level, message, ctx, user, txId, err, tags, device } = info;
 
@@ -38,8 +38,8 @@ export const ecsTransformer = (
       query?: string;
       fragment?: string;
     } = { full: ctx?.URL?.href };
-    const hasQuery = requestUrl?.indexOf("?") ?? -1;
-    const hasAnchor = requestUrl?.indexOf("#") ?? -1;
+    const hasQuery = requestUrl?.indexOf('?') ?? -1;
+    const hasAnchor = requestUrl?.indexOf('#') ?? -1;
 
     if (hasQuery > -1 && hasAnchor > -1) {
       url.path = requestUrl?.slice(0, hasQuery);
@@ -60,14 +60,11 @@ export const ecsTransformer = (
 
   const parseClient = () => {
     const req = ctx?.request;
-    const xForwardedFor = req?.header["x-forwarded-for"] as string | undefined;
-    const xRealIp = req?.header["x-real-ip"] as string | undefined;
+    const xForwardedFor = req?.header['x-forwarded-for'] as string | undefined;
+    const xRealIp = req?.header['x-real-ip'] as string | undefined;
 
     // NOTE: https://developer.mozilla.org/ko/docs/Web/HTTP/Headers/X-Forwarded-For 헤더는 수정이 가능하지만 명세상으로는 가장 왼쪽이 최초 client IP를 바라본다.
-    const ip =
-      xForwardedFor?.split(",")[0]?.trim() ||
-      xRealIp ||
-      req?.socket.remoteAddress;
+    const ip = xForwardedFor?.split(',')[0]?.trim() || xRealIp || req?.socket.remoteAddress;
 
     return {
       ip,
@@ -80,14 +77,14 @@ export const ecsTransformer = (
   const res = ctx?.response;
 
   const ecsFields = {
-    "@timestamp": new Date(),
+    '@timestamp': new Date(),
     log: { level },
     message,
     ecs: {
       // NOTE: @see https://www.elastic.co/guide/en/ecs/current/ecs-field-reference.html
-      version: "8.10.0", // 로깅 필드를 변경할 경우 ecs version 에 맞춰야 한다.
+      version: '8.10.0', // 로깅 필드를 변경할 경우 ecs version 에 맞춰야 한다.
     },
-    tags: tags ?? ["request"],
+    tags: tags ?? ['request'],
     service: {
       name: options?.name,
     },
@@ -113,7 +110,7 @@ export const ecsTransformer = (
     },
     url: parseUrl(),
     user_agent: {
-      original: req?.header["user-agent"],
+      original: req?.header['user-agent'],
     },
     client: parseClient(),
     error: err
