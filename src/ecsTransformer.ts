@@ -1,4 +1,5 @@
 import type { Context } from 'koa';
+import { jsonStringify } from './json-stringify';
 
 const Message = Symbol.for('message');
 
@@ -127,7 +128,7 @@ export const ecsTransformer = (
     device,
   };
 
-  Object.assign(info, { [Message]: JSON.stringify(ecsFields) });
+  Object.assign(info, { [Message]: jsonStringify(ecsFields) });
 
   return info;
 };
