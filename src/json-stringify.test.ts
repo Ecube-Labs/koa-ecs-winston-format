@@ -28,12 +28,37 @@ describe('jsonStringify', () => {
 
   test('circular reference', () => {
     const parent = new Parent('parent', 40);
-    const child = new Child('child', 10, parent);
-    const child2 = new Child('child2', 20, parent);
+    const _child = new Child('child', 10, parent);
+    const _child2 = new Child('child2', 20, parent);
 
     expect(() => JSON.stringify(parent)).toThrow('Converting circular structure to JSON');
-    expect(jsonStringify(parent)).toBe(
-      '{"name":"parent","age":40,"children":[{"name":"child","age":10,"parent":"[Circular Parent]","siblings":"[Circular Array]","self":"[Circular Child]"},{"name":"child2","age":20,"parent":"[Circular Parent]","siblings":"[Circular Array]","self":"[Circular Child]"}]}',
-    );
+    expect(JSON.parse(jsonStringify(parent))).toEqual({
+      age: 40,
+      children: [
+        {
+          age: 10,
+          name: 'child',
+          parent: '[Circular ~]',
+          self: '[Circular ~.children.0]',
+          siblings: '[Circular ~.children]',
+        },
+        {
+          age: 20,
+          name: 'child2',
+          parent: '[Circular ~]',
+          self: '[Circular ~.children.1]',
+          siblings: '[Circular ~.children]',
+        },
+      ],
+      name: 'parent',
+    });
+
+    const self: { self?: any } = {};
+    self.self = self;
+
+    expect(() => JSON.stringify(self)).toThrow('Converting circular structure to JSON');
+    expect(JSON.parse(jsonStringify(self))).toEqual({
+      self: '[Circular ~]',
+    });
   });
 });
