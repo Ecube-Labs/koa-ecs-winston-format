@@ -1,2 +1,5 @@
 node_modules
-*.spec.ts
+*.test.*
+jest.config.js
+.eslintrc.js
+.prettierrc.js
