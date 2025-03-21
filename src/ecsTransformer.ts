@@ -25,10 +25,11 @@ export const ecsTransformer = (
     err?: Error & { [key: string]: any };
     tags?: string[];
     device?: DeviceField;
+    labels?: Record<string, any>;
   },
   options?: Record<string, any>
 ) => {
-  const { level, message, ctx, user, txId, err, tags, device } = info;
+  const { level, message, ctx, user, txId, err, tags, device, labels } = info;
 
   const parseUrl = () => {
     const requestUrl = ctx?.req?.url;
@@ -128,6 +129,7 @@ export const ecsTransformer = (
         }
       : undefined,
     device,
+    labels,
   };
 
   Object.assign(info, { [Message]: JSON.stringify(ecsFields) });
